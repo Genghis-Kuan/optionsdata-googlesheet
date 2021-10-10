@@ -54,10 +54,6 @@ def main():
             exp_date = values[i][6]
             print(ticker, strike, dir_type, exp_date)  # values contains each row of data
 
-        # for row in values:
-        #     #
-        #     print('eggsdi')
-
 
 
 if __name__ == '__main__':
