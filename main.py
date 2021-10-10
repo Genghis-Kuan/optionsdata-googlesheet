@@ -65,16 +65,16 @@ def main():
     if not values:
         print('No data found.')
     else:
-        for i in range(len(values)): # everything will happen within this loop
+        for i in range(len(values)):  # everything will happen within this loop
             ticker = values[i][0]
             strike = values[i][4]
             dir_type = values[i][5]
             exp_date = values[i][6]
-            # print(ticker, strike, dir_type, exp_date)  # values contains each row of data
+            # print(ticker, strike, dir_type, exp_date)
 
-            # reformat variables above into yahoo finance (yf) format
+            # Reformat variables above into yahoo finance (yf) format
             yf_ticker = ticker  # ticker needs no format
-            yf_strike = str(int(float(strike) * 1000))  # strike format
+            yf_strike = '000' + str(int(float(strike) * 1000))  # strike format
             yf_dir_type = 'C' if  dir_type == 'Call' else 'P'  # direction format
 
             yf_exp_temp = exp_date.partition('/')
@@ -87,14 +87,14 @@ def main():
                 yf_exp_month = '0' + yf_exp_month
             yf_exp_year = yf_exp_temp[2]  # year format
             yf_exp_year = str(int(yf_exp_year) - 2000)
-            yf_exp_date = yf_exp_year + yf_exp_month + yf_exp_day
-            print(yf_exp_date)
-            # compile the pulled ticked from the gsheet into a data using yf format
-            # print(ticker, strike, dir_type, exp_date)  # values contains each row of data
+            yf_exp_date = yf_exp_year + yf_exp_day + yf_exp_month
+            # print(yf_exp_date)
 
-            # data_yf = ticker + exp_date + dir_type + strike
-            # print(data_yf)
-            # data_url = 'https://finance.yahoo.com/quote/RKLB220414C00012500?p=RKLB220414C00012500'
+            # Compile the pulled ticked from the gsheet into a data using yf format
+
+            yf_data = yf_ticker + yf_exp_date + yf_dir_type + yf_strike
+            data_url = 'https://finance.yahoo.com/quote/' + yf_data + '?p=' + yf_data
+            print(data_url)
             # option_info = data_url[data_url.find('?p=') + 3:len(
             #     data_url)]  # cleans the url such that only the relevant information is present
             # option_info = 'SPY211008P00300000'
