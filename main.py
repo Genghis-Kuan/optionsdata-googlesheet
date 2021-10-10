@@ -1,12 +1,13 @@
 from __future__ import print_function
 from bs4 import BeautifulSoup as bs
 import requests
-import datetime
+import numpy as np
 import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+
 # This script uses Python and BeautifulSoup to scrape financial data from the Web and build your own dataset for Options
 # It is based loosely on the the tutorial given by Harry Sauers (https://www.freecodecamp.org/news/how-i-get-options-data-for-free-fba22d395cc8/)
 # It uses the google cloud API through and OAuth 2.0 Client ID to access the google sheet. By using the standard google
@@ -18,15 +19,15 @@ from google.oauth2.credentials import Credentials
 # Author: Kuan Chen
 
 
-
 # https://developers.google.com/sheets/api/quickstart/python
 # https://developers.google.com/workspace/guides/create-credentials
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-# The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '12-XSq38g7wJ9Jz1wmEJSEhaWSgvOQ5wv3Qs2tGVw_Jk'
 SAMPLE_RANGE_NAME = 'Derivatives Transactions!C3:N'
+spreadsheet_id_out = '12-XSq38g7wJ9Jz1wmEJSEhaWSgvOQ5wv3Qs2tGVw_Jk'
+range_name_out = 'Derivatives!F6:F'
 
 
 def main():
@@ -55,7 +56,6 @@ def main():
             token.write(creds.to_json())
 
     service = build('sheets', 'v4', credentials=creds)
-
     # Call the Sheets API
     sheet = service.spreadsheets()
     result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
@@ -65,7 +65,8 @@ def main():
     if not values:
         print('No data found.')
     else:
-        for i in range(len(values)):  # everything will happen within this loop
+        price_data_out = [None] * (len(values))
+        for i in range(len(values)):
             ticker = values[i][0]
             strike = values[i][4]
             dir_type = values[i][5]
@@ -81,7 +82,7 @@ def main():
                 yf_strike = '00' + yf_strike
             elif len(yf_strike) == 7:
                 yf_strike = '0' + yf_strike
-            yf_dir_type = 'C' if  dir_type == 'Call' else 'P'  # direction format
+            yf_dir_type = 'C' if dir_type == 'Call' else 'P'  # direction format
 
             yf_exp_temp = exp_date.partition('/')
             yf_exp_day = yf_exp_temp[0]  # day format
@@ -109,10 +110,16 @@ def main():
                 tds = tr.find_all('td')
                 label_data.append(tds[0].text)
                 price_data.append(tds[1].text)
+            price_data_out[i] = price_data[0]
 
-            print(label_data)
-            print(price_data)
-            print(ticker)
+        body = {
+            'values': price_data_out
+        }
+        print(creds)  # F6:F
+        result = service.spreadsheets().values().update(
+            spreadsheetId=spreadsheet_id_out, range=range_name_out,
+            valueInputOption='USER_ENTERED', body=body).execute()
+        print('{0} cells updated.'.format(result.get('updatedCells')))
 
 
 if __name__ == '__main__':
