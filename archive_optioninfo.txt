@@ -1,0 +1,21 @@
+# this all may not be needed anymore
+            # option_info = data_url[data_url.find('?p=') + 3:len(
+            #     data_url)]  # cleans the url such that only the relevant information is present
+            # option_info = 'SPY211008P00300000'
+
+            # if len(option_info) == 18:  # tickers can be 3 or 4 character so we need to account for two scenarios
+            #     mod = 0
+            # elif len(option_info) == 19:
+            #     mod = 1
+            # else:
+            #     raise Exception("Something fucked up yo")
+            # ticker = option_info[0:3 + mod]  # otherwise the information is in a standardized and easy to access structure
+            # expiration = option_info[3 + mod:9 + mod]
+            # expiration_out = datetime.datetime(2000 + int(expiration[0:2]), int(expiration[2:4]), int(expiration[4:6]))
+            # type = option_info[9 + mod]
+            # if type == 'C':
+            #     type_out = 'call'
+            # else:
+            #     type_out = 'put'
+            # # print(expiration_out.strftime("%b %d %Y %H:%M:%S"))  # reformat date into more readable vers.
+            #

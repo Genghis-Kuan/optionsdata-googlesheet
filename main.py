@@ -74,7 +74,13 @@ def main():
 
             # Reformat variables above into yahoo finance (yf) format
             yf_ticker = ticker  # ticker needs no format
-            yf_strike = '000' + str(int(float(strike) * 1000))  # strike format
+            yf_strike = str(int(float(strike) * 1000))  # strike format
+            if len(yf_strike) == 5:
+                yf_strike = '000' + yf_strike
+            elif len(yf_strike) == 6:
+                yf_strike = '00' + yf_strike
+            elif len(yf_strike) == 7:
+                yf_strike = '0' + yf_strike
             yf_dir_type = 'C' if  dir_type == 'Call' else 'P'  # direction format
 
             yf_exp_temp = exp_date.partition('/')
@@ -88,48 +94,25 @@ def main():
             yf_exp_year = yf_exp_temp[2]  # year format
             yf_exp_year = str(int(yf_exp_year) - 2000)
             yf_exp_date = yf_exp_year + yf_exp_day + yf_exp_month
-            # print(yf_exp_date)
 
             # Compile the pulled ticked from the gsheet into a data using yf format
-
             yf_data = yf_ticker + yf_exp_date + yf_dir_type + yf_strike
             data_url = 'https://finance.yahoo.com/quote/' + yf_data + '?p=' + yf_data
-            print(data_url)
-            # option_info = data_url[data_url.find('?p=') + 3:len(
-            #     data_url)]  # cleans the url such that only the relevant information is present
-            # option_info = 'SPY211008P00300000'
+            # print(data_url)
+            # print(ticker, strike, dir_type, exp_date)
 
-            # if len(option_info) == 18:  # tickers can be 3 or 4 character so we need to account for two scenarios
-            #     mod = 0
-            # elif len(option_info) == 19:
-            #     mod = 1
-            # else:
-            #     raise Exception("Something fucked up yo")
-            # ticker = option_info[0:3 + mod]  # otherwise the information is in a standardized and easy to access structure
-            # expiration = option_info[3 + mod:9 + mod]
-            # expiration_out = datetime.datetime(2000 + int(expiration[0:2]), int(expiration[2:4]), int(expiration[4:6]))
-            # type = option_info[9 + mod]
-            # if type == 'C':
-            #     type_out = 'call'
-            # else:
-            #     type_out = 'put'
-            # # print(expiration_out.strftime("%b %d %Y %H:%M:%S"))  # reformat date into more readable vers.
-            #
-            # data_html = requests.get(data_url, headers=headers).content  # pulls html data from the website listed
-            # content = bs(data_html, 'html.parser')  # parses html to usable format
-            # name_data = []
-            # price_data = []
-            # for tr in content.find_all('tr'):  # simple for loop which pulls data from table and places it in an array
-            #     tds = tr.find_all('td')
-            #     name_data.append(tds[0].text)
-            #     price_data.append(tds[1].text)
-            #
-            # print(option_info)
-            # print(name_data)
-            # print(price_data)
-            # print(type_out)
-            # print(ticker)
-            # print(expiration_out)
+            data_html = requests.get(data_url, headers=headers).content  # pulls html data from the website listed
+            content = bs(data_html, 'html.parser')  # parses html to usable format
+            label_data = []
+            price_data = []
+            for tr in content.find_all('tr'):  # simple for loop which pulls data from table and places it in an array
+                tds = tr.find_all('td')
+                label_data.append(tds[0].text)
+                price_data.append(tds[1].text)
+
+            print(label_data)
+            print(price_data)
+            print(ticker)
 
 
 if __name__ == '__main__':
