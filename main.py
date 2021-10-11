@@ -112,11 +112,14 @@ def main():
                 price_data.append(tds[1].text)
             price_data_out[i] = price_data[0]
 
+        price_update = []
+        for j in range(len(price_data_out)):
+            price_update.append([price_data_out[j]])
         body = {
-            'values': price_data_out
+            'values': price_update
         }
-        print(creds)  # F6:F
-        result = service.spreadsheets().values().update(
+
+        result = sheet.values().update(
             spreadsheetId=spreadsheet_id_out, range=range_name_out,
             valueInputOption='USER_ENTERED', body=body).execute()
         print('{0} cells updated.'.format(result.get('updatedCells')))
