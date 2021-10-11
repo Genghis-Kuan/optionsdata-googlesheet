@@ -110,7 +110,7 @@ def main():
                 tds = tr.find_all('td')
                 label_data.append(tds[0].text)
                 price_data.append(tds[1].text)
-            price_data_out[i] = price_data[0]
+            price_data_out[i] = price_data[3]
 
         price_update = []
         for j in range(len(price_data_out)):
